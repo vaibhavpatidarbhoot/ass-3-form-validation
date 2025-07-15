@@ -1,11 +1,83 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Form Validation</title>
-  <link rel="stylesheet" href="styles.css">
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f2f2f2;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .form-container {
+      background: white;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      width: 300px;
+    }
+
+    form h2 {
+      margin-bottom: 1rem;
+    }
+
+    input {
+      display: block;
+      width: 100%;
+      margin-bottom: 1rem;
+      padding: 0.5rem;
+      font-size: 1rem;
+    }
+
+    .password-group {
+      position: relative;
+    }
+
+    .password-group button {
+      position: absolute;
+      right: 0.5rem;
+      top: 50%;
+      transform: translateY(-50%);
+      padding: 0.3rem 0.6rem;
+      font-size: 0.8rem;
+      cursor: pointer;
+    }
+
+    button[type="submit"] {
+      width: 100%;
+      padding: 0.5rem;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    #message {
+      margin-bottom: 1rem;
+      padding: 0.5rem;
+      display: none;
+      border-radius: 5px;
+    }
+
+    #message.success {
+      background-color: #d4edda;
+      color: #155724;
+    }
+
+    #message.error {
+      background-color: #f8d7da;
+      color: #721c24;
+    }
+  </style>
 </head>
 <body>
   <div class="form-container">
@@ -27,6 +99,56 @@
     </form>
   </div>
 
-  <script src="script.js"></script>
+  <script>
+    document.getElementById('togglePassword').addEventListener('click', function () {
+      const passwordField = document.getElementById('password');
+      const type = passwordField.type === 'password' ? 'text' : 'password';
+      passwordField.type = type;
+      this.textContent = type === 'password' ? 'Show' : 'Hide';
+    });
+
+    document.getElementById('validationForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      const password = document.getElementById('password').value.trim();
+      const messageBox = document.getElementById('message');
+
+      messageBox.className = '';
+      messageBox.style.display = 'none';
+
+      if (!name || !email || !phone || !password) {
+        showMessage('All fields are required.', 'error');
+        return;
+      }
+
+      const emailPattern = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;
+      if (!emailPattern.test(email)) {
+        showMessage('Invalid email format.', 'error');
+        return;
+      }
+
+      if (!/^\d{10}$/.test(phone)) {
+        showMessage('Phone number must be exactly 10 digits.', 'error');
+        return;
+      }
+
+      const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/;
+      if (!passwordPattern.test(password)) {
+        showMessage('Password must be at least 6 characters with uppercase, lowercase, and number.', 'error');
+        return;
+      }
+
+      showMessage('Form submitted successfully!', 'success');
+    });
+
+    function showMessage(message, type) {
+      const box = document.getElementById('message');
+      box.textContent = message;
+      box.className = type;
+      box.style.display = 'block';
+    }
+  </script>
 </body>
 </html>
