@@ -72,8 +72,9 @@
     <div class="msg" id="msg"></div>
     <input type="text" id="name" placeholder="Enter your name" />
     <input type="email" id="email" placeholder="Enter your email" />
-    <input type="tel" id="phone" placeholder="Enter your phone (10 digits)" />
+    <input type="tel" id="phone" maxlength="10" placeholder="Enter your phone (10 digits)" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0,10)" />
     <input type="password" id="password" placeholder="Enter your password" />
+    <input type="password" id="confirmPassword" placeholder="Confirm your password" />
     <button type="button" class="toggle-btn" onclick="togglePassword()">Show/Hide Password</button>
     <button onclick="validateForm()">Submit</button>
   </div>
@@ -81,7 +82,10 @@
   <script>
     function togglePassword() {
       const pwd = document.getElementById("password");
-      pwd.type = pwd.type === "password" ? "text" : "password";
+      const confirmPwd = document.getElementById("confirmPassword");
+      const type = pwd.type === "password" ? "text" : "password";
+      pwd.type = type;
+      confirmPwd.type = type;
     }
 
     function showMessage(msg, type) {
@@ -91,45 +95,42 @@
       box.style.display = "block";
     }
 
+    function validateForm() {
+      const name = document.getElementById("name").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const phone = document.getElementById("phone").value.trim();
+      const password = document.getElementById("password").value.trim();
+      const confirmPassword = document.getElementById("confirmPassword").value.trim();
 
+      if (!name || !email || !phone || !password || !confirmPassword) {
+        showMessage("All fields are required.", "error");
+        return;
+      }
 
-function validateForm() {
-  const name = document.getElementById("name").value.trim();
-  const email = document.getElementById("email").value.trim();
-  const phone = document.getElementById("phone").value.trim();
-  const password = document.getElementById("password").value.trim();
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailPattern.test(email)) {
+        showMessage("Invalid email address.", "error");
+        return;
+      }
 
-  if (!name || !email || !phone || !password) {
-    showMessage("All fields are required.", "error");
-    return;
-  }
+      if (!/^\d{10}$/.test(phone)) {
+        showMessage("Phone number must be 10 digits.", "error");
+        return;
+      }
 
-  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailPattern.test(email)) {
-    showMessage("Invalid email address.", "error");
-    return;
-  }
+      const passPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/;
+      if (!passPattern.test(password)) {
+        showMessage("Password must have uppercase, lowercase, number, and be at least 6 characters.", "error");
+        return;
+      }
 
-  if (!/^\d{10}$/.test(phone)) {
-    showMessage("Phone number must be 10 digits.", "error");
-    return;
-  }
+      if (password !== confirmPassword) {
+        showMessage("Passwords do not match.", "error");
+        return;
+      }
 
-  const passPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/;
-  if (!passPattern.test(password)) {
-    showMessage("Password must have uppercase, lowercase, number, and be at least 6 characters.", "error");
-    return;
-  }
-
-  showMessage("Form submitted successfully!", "success");
-}
-
-
-
-
-
-
-  
+      showMessage("Form submitted successfully!", "success");
+    }
   </script>
 </body>
 </html>
